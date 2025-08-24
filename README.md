@@ -1,55 +1,249 @@
-[![Dynamic DevOps Roadmap](https://img.shields.io/badge/Dynamic_DevOps_Roadmap-559e11?style=for-the-badge&logo=Vercel&logoColor=white)](https://devopsroadmap.io/getting-started/)
-[![Community](https://img.shields.io/badge/Join_Community-%23FF6719?style=for-the-badge&logo=substack&logoColor=white)](https://newsletter.devopsroadmap.io/subscribe)
-[![Telegram Group](https://img.shields.io/badge/Telegram_Group-%232ca5e0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/DevOpsHive/985)
-[![Fork on GitHub](https://img.shields.io/badge/Fork_On_GitHub-%2336465D?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DevOpsHiveHQ/devops-hands-on-project-hivebox/fork)
+# HiveBox - DevOps End-to-End Project 🐝
 
-# HiveBox - DevOps End-to-End Hands-On Project
+A scalable RESTful API for tracking environmental sensor data from openSenseMap, customized to help beekeepers monitor their hives. This project follows DevOps best practices and covers the complete Software Development Life Cycle (SDLC).
 
-<p align="center">
-  <a href="https://devopsroadmap.io/projects/hivebox" style="display: block; padding: .5em 0; text-align: center;">
-    <img alt="HiveBox - DevOps End-to-End Hands-On Project" border="0" width="90%" src="https://devopsroadmap.io/img/projects/hivebox-devops-end-to-end-project.png" />
-  </a>
-</p>
+## 📋 Project Overview
 
-> [!CAUTION]
-> **[Fork](https://github.com/DevOpsHiveHQ/devops-hands-on-project-hivebox/fork)** this repo, and create PRs in your fork, **NOT** in this repo!
+HiveBox builds a production-ready API that:
+- Fetches real sensor data from [openSenseMap](https://opensensemap.org/)
+- Provides temperature monitoring for beekeepers
+- Scales from basic implementation to handling thousands of requests per second
+- Implements complete CI/CD pipeline with monitoring and observability
 
-> [!TIP]
-> If you are looking for the full roadmap, including this project, go back to the [getting started](https://devopsroadmap.io/getting-started) page.
+**Target SenseBox IDs:**
+- `5eba5fbad46fb8001b799786`
+- `5c21ff8f919bf8001adf2488` 
+- `5ade1acf223bd80019a1011c`
 
-This repository is the starting point for [HiveBox](https://devopsroadmap.io/projects/hivebox/), the end-to-end hands-on project.
+## 🗺️ Project Roadmap
 
-You can fork this repository and start implementing the [HiveBox](https://devopsroadmap.io/projects/hivebox/) project. HiveBox project follows the same Dynamic MVP-style mindset used in the [roadmap](https://devopsroadmap.io/).
+| Phase | Status | Description |
+|-------|---------|-------------|
+| **Phase 1** | ✅ | Project Setup & Planning |
+| **Phase 2** | 📋 | Basic Implementation & Containers |
+| **Phase 3** | 📋 | Quality Gates & CI Pipeline |
+| **Phase 4** | 📋 | Kubernetes & CD Pipeline |
+| **Phase 5** | 📋 | Production Features (Cache, Storage, Monitoring) |
+| **Phase 6** | 📋 | Optimization & Advanced Features |
 
-The project aims to cover the whole Software Development Life Cycle (SDLC). That means each phase will cover all aspects of DevOps, such as planning, coding, containers, testing, continuous integration, continuous delivery, infrastructure, etc.
+## 🚀 Getting Started
 
-Happy DevOpsing ♾️
-
-## Before you start
-
-Here is a pre-start checklist:
-
-- ⭐ <a target="_blank" href="https://github.com/DevOpsHiveHQ/dynamic-devops-roadmap">Star the **roadmap** repo</a> on GitHub for better visibility.
-- ✉️ <a target="_blank" href="https://newsletter.devopsroadmap.io/subscribe">Join the community</a> for the project community activities, which include mentorship, job posting, online meetings, workshops, career tips and tricks, and more.
-- 🌐 <a target="_blank" href="https://t.me/DevOpsHive/985">Join the Telegram group</a> for interactive communication.
-
-## Preparation
-
-- [Create GitHub account](https://docs.github.com/en/get-started/start-your-journey/creating-an-account-on-github) (if you don't have one), then [fork this repository](https://github.com/DevOpsHiveHQ/devops-hands-on-project-hivebox/fork) and start from there.
-- [Create GitHub project board](https://docs.github.com/en/issues/planning-and-tracking-with-projects/creating-projects/creating-a-project) for this repository (use `Kanban` template).
-- Each phase should be presented as a pull request against the `main` branch. Don’t push directly to the main branch!
-- Document as you go. Always assume that someone else will read your project at any phase.
-- You can get senseBox IDs by checking the [openSenseMap](https://opensensemap.org/) website. Use 3 senseBox IDs close to each other (you can use the following [5eba5fbad46fb8001b799786](https://opensensemap.org/explore/5eba5fbad46fb8001b799786), [5c21ff8f919bf8001adf2488](https://opensensemap.org/explore/5c21ff8f919bf8001adf2488), and [5ade1acf223bd80019a1011c](https://opensensemap.org/explore/5ade1acf223bd80019a1011c)). Just copy the IDs, you will need them in the next steps.
-
-<br/>
-<p align="center">
-  <a href="https://devopsroadmap.io/projects/hivebox/" imageanchor="1">
-    <img src="https://img.shields.io/badge/Get_Started_Now-559e11?style=for-the-badge&logo=Vercel&logoColor=white" />
-  </a><br/>
-</p>
+### Prerequisites
+- Git installed
+- GitHub account
+- Docker (for Phase 2+)
+- Python 3.8+ (for Phase 2+)
 
 ---
 
-## Implementation
+## 📖 Detailed Implementation Guide
 
-** ADD YOUR IMPLEMENTATION DOCUMENTATION HERE **
+## Phase 1: Kickoff - Setting up the GitHub repo and the project page
+
+**Objective:** Establish project structure, Git workflow, and project management setup.
+
+### 1. Fork the Main Repository
+
+We start by forking the main project repository (It only has a README.md, nothing more):
+
+**Main Project Link:** https://github.com/DevOpsHiveHQ/devops-hands-on-project-hivebox
+
+1. Go to the repository link above
+2. Click "Fork" button in the top right
+3. Select your GitHub account as the destination
+
+### 2. Clone the Repository Locally
+
+```bash
+# Clone your forked repository
+git clone https://github.com/YOUR-USERNAME/devops-hands-on-project-hivebox
+cd devops-hands-on-project-hivebox
+```
+
+### 3. Add Upstream Remote
+
+We add the original repo as upstream to pull any updates:
+
+```bash
+git remote add upstream https://github.com/DevOpsHiveHQ/devops-hands-on-project-hivebox.git
+```
+
+**Verify remote repositories:**
+```bash
+git remote -v
+```
+
+You should see:
+- `origin`: Your forked repo (where you push changes)
+- `upstream`: Project's original repo (for pulling updates)
+
+### 4. Branching Strategy
+
+We follow **Git Flow best practices** for development projects by creating an integration branch and feature branches for each phase.
+
+**Branch Structure:**
+```
+main (production-ready code) - Production environment (always deployable)
+├── development (integration branch) - Staging/QA environment (integration testing)
+    ├── phase-1-kickoff (feature branch)
+    ├── phase-2-implementation (feature branch)
+    ├── phase-3-ci-cd (feature branch)
+    └── etc...
+```
+
+**Setup branches:**
+```bash
+# Create development branch
+git checkout -b development
+
+# Create feature branch for Phase 1
+git checkout -b phase-1-kickoff
+```
+
+**Important Rule:** "Each phase should be presented as a pull request against the main branch. Don't push directly to the main branch!"
+
+**Workflow:**
+1. Work on `phase-1-kickoff` branch
+2. When done, create PR: `phase-1-kickoff` → `main`
+3. Merge the PR
+4. Start next phase on new branch from updated `main`
+
+### 5. GitHub Project Board Setup
+
+1. Go to your forked repository on GitHub
+2. Click "Projects" tab → "New project"
+3. Choose "Table" view → "Kanban" template
+4. Create columns: "Backlog", "In Progress", "In Review", "Done"
+5. Add cards for each phase and major tasks
+
+### 6. Project Structure Creation
+
+Create the initial project structure:
+
+```bash
+# Create directories
+mkdir -p docs src tests
+
+# Create initial files
+touch requirements.txt
+touch src/__init__.py
+
+# Create phase documentation
+touch docs/phase-1.md
+```
+
+### 7. OpenSenseMap API Research
+
+Test the target senseBox APIs to understand the data structure:
+
+```bash
+# Test first senseBox
+curl -s "https://api.opensensemap.org/boxes/5eba5fbad46fb8001b799786"
+
+# Check temperature sensor data
+curl -s "https://api.opensensemap.org/boxes/5eba5fbad46fb8001b799786" | grep -i temperature
+```
+
+### 8. Commit Phase 1 Work
+
+```bash
+# Add all changes
+git add .
+
+# Commit with conventional commits format
+git commit -m "docs: complete Phase 1 project setup and documentation
+
+- Add project structure (src, tests, docs)
+- Create branching strategy following Git Flow
+- Update README with step-by-step guide
+- Research openSenseMap API endpoints"
+
+# Push to your fork
+git push origin phase-1-kickoff
+```
+
+### 9. Create Pull Request
+
+1. Go to your GitHub repository
+2. Click "Compare & pull request" for `phase-1-kickoff` branch
+3. Target: `main` branch
+4. Add description of Phase 1 completion
+5. Create pull request and merge it
+
+---
+
+## 🔮 Upcoming Phases
+
+### Phase 2: Basic Implementation & Containers
+- FastAPI/Flask implementation
+- Docker containerization
+- Version endpoint implementation
+
+### Phase 3: Quality Gates & CI Pipeline
+- Unit testing
+- GitHub Actions CI
+- Code quality checks
+- Temperature endpoint with status logic
+
+### Phase 4: Kubernetes & CD Pipeline
+- KIND cluster setup
+- Kubernetes manifests
+- Ingress configuration
+- Continuous Delivery pipeline
+
+### Phase 5: Production Features
+- Redis caching layer
+- MinIO storage integration
+- Prometheus metrics
+- Health checks and readiness probes
+
+### Phase 6: Optimization & GitOps
+- Argo CD for GitOps
+- Multi-environment setup
+- Performance optimization
+- Advanced monitoring
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Language** | Python |
+| **Framework** | FastAPI |
+| **Containerization** | Docker |
+| **Orchestration** | Kubernetes |
+| **CI/CD** | GitHub Actions |
+| **Caching** | Valkey (Redis-compatible) |
+| **Storage** | MinIO (S3-compatible) |
+| **Monitoring** | Prometheus, Grafana |
+| **Infrastructure** | Terraform |
+
+## 📚 Learning Outcomes
+
+By completing this project, you will gain hands-on experience with:
+
+- ✅ Agile project management and Git Flow
+- 🔄 RESTful API development and testing
+- 🐳 Docker containerization best practices
+- ☸️ Kubernetes deployment and management
+- 🔄 CI/CD pipeline implementation
+- 📊 Monitoring and observability
+- 🏗️ Infrastructure as Code (IaC)
+- 🔒 Security best practices
+- 📈 Performance optimization and scaling
+
+## 🤝 Contributing
+
+This is a learning project following DevOps best practices:
+
+1. Each phase should be implemented in a separate branch
+2. All changes must go through Pull Request review
+3. Follow conventional commit messages
+4. Document everything for future reference
+
+## 📄 License
+
+This project is for educational purposes as part of the DevOps learning journey.
+
+---
+
+**Built with ♾️ DevOps best practices and a passion for continuous learning!**
