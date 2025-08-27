@@ -1,0 +1,79 @@
+name: CI Pipline for HiveBox Project
+
+on:
+    push:
+        branches: [ "main", "phase-3-testing-ci" ]
+    pull_request:
+        branches: [ "main" ]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: '3.11'
+
+        - name: Install dependencies
+          run: |
+            python3 -m pip install --upgrade pip
+            pip install -r requirements.txt
+
+        - name: Lint with pylint
+          run: |
+            python3 -m pylint src/main.py
+        
+        - name: Run unit tests
+          run: |
+            python3 -m pytest tests/test_*.py -v
+        - name: Test version endpoint
+          run: |
+                # Start the app in background
+                python3 src/main.py &
+                APP_PID=$!
+                sleep 5  # Wait for app to start
+                
+                # Test the /version endpoint
+                response=$(curl -s http://localhost:8000/version)
+                echo "Version endpoint response: $response"
+                
+                # Check if response contains expected version
+                if echo "$response" | grep -q "0.0.1"; then
+                echo "Version endpoint test passed"
+                else
+                echo "Version endpoint test failed"
+                exit 1
+                fi
+                
+                # Clean up
+                kill $APP_PID        
+            
+    build:
+        runs-on: ubuntu-latest
+        needs: test
+        
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Build Docker image
+          run: |
+                docker build -t hivebox:ci-test .
+            
+        - name: Test Docker container
+          run: |
+            # Test the container runs and outputs correct version
+            output=$(docker run hivebox:ci-test)
+            echo "Container output: $output"
+            
+            if echo "$output" | grep -q "HiveBox App Version: v0.0.1"; then
+            echo "Docker container test passed"
+            else
+            echo "Docker container test failed"
+            exit 1
+            fi
