@@ -3,3 +3,6 @@ uvicorn[standard]==0.24.0
 pytest==7.4.3
 httpx==0.25.2
 requests==2.31.0
+pytest-asyncio==0.21.1
+pylint==3.0.3
+
