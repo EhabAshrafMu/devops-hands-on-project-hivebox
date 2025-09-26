@@ -131,7 +131,7 @@ jobs:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           with:
             args: >
-              -Dsonar.projectKey=ehabashrafmu_devops-hands-on-project-hivebox
+              -Dsonar.projectKey=EhabAshrafMu_devops-hands-on-project-hivebox
               -Dsonar.organization=ehabashrafmu
               -Dsonar.host.url=https://sonarcloud.io
               -Dsonar.python.coverage.reportPaths=coverage.xml
@@ -139,7 +139,6 @@ jobs:
               -Dsonar.tests=tests
               -Dsonar.language=py
               -Dsonar.sourceEncoding=UTF-8
-
     # Stage 3: Kubernetes Security Scanning
     terrascan-analysis:
         name: Terrascan Kubernetes Security Analysis
