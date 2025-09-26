@@ -6,6 +6,8 @@ metadata:
     app: hivebox-api
     component: backend
     version: v0.0.1
+  annotations:
+    container.apparomor.security.beta.kubernetes.io/hibebox-api: runtime/default
 spec:
   replicas: 2
   strategy:
@@ -23,16 +25,18 @@ spec:
       labels:
         app: hivebox-api
         component: backend
-        version: v0.0.1
+        version: v0.0.2
     spec:
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         runAsNonRoot: true
         runAsUser: 1001
         fsGroup: 1001
 
       containers:
         - name: hivebox-api
-          image: ehabashrafmu/hivebox:0.0.2
+          image: ehabashrafmu/hivebox:latest
           imagePullPolicy: IfNotPresent
 
           ports:
