@@ -1,5 +1,6 @@
+
 [MASTER]
 init-hook='import sys; sys.path.append("src")'
 
 [MESSAGES CONTROL]
-disable=C0114,C0116,R0903,W0613
+disable=C0114,C0116,R0903,W0613,trailing-whitespace,missing-module-docstring,missing-function-docstring,missing-class-docstring
