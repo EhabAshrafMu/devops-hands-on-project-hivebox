@@ -162,13 +162,6 @@ jobs:
             non_recursive: false
             verbose: true
 
-        - name: Upload Terrascan SARIF results
-          uses: github/codeql-action/upload-sarif@v3
-          if: always()
-          with:
-            sarif_file: terrascan-results.sarif
-    
-
     # Stage 5: Build and Push (only after all quality gates pass)
     build:
         name: Build and Push Docker Image
