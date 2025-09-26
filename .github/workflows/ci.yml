@@ -9,7 +9,7 @@ on:
 env:
     PYTHON_VERSION: '3.11'
     IMAGE_NAME: ehabashrafmu/hivebox
-    IMAGE_TAG: 0.0.2
+    IMAGE_TAG: ${{ github.sha }}
 
 jobs:
     # Stage 1: Test the application
@@ -256,6 +256,11 @@ jobs:
             docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             docker push ${{ env.IMAGE_NAME }}:latest
             echo "Successfully pushed to Docker Hub"
+        - name: Update Kubernetes manifests with commit SHA
+          run: |
+            echo "Updating Kubernetes manifests with image tag..."
+            sed -i 's|image: ehabashrafmu/hivebox:.*|image: ehabashrafmu/hivebox:${{ env.IMAGE_TAG }}|g' k8s_manifests/deployment.yaml
+            cat k8s_manifests/deployment.yaml
 
     # Stage 6: Pipeline Summary
     pipeline-summary:
