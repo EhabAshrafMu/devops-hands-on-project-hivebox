@@ -14,7 +14,7 @@ def test_version_endpoint():
     response = client.get("/version")
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "0.0.1"
+    assert data["version"] == "0.0.2"
     assert data["name"] == "HiveBox"
 
 def test_health_endpoint():
