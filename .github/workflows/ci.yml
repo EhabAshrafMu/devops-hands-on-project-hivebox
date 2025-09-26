@@ -158,10 +158,12 @@ jobs:
             policy_type: 'k8s'
             only_warn: true
             iac_dir: './k8s_manifests'
+            sarif_upload: true
+            non_recursive: false
             verbose: true
 
         - name: Upload Terrascan SARIF results
-          uses: github/codeql-action/upload-sarif@v2
+          uses: github/codeql-action/upload-sarif@v3
           if: always()
           with:
             sarif_file: terrascan-results.sarif
@@ -246,7 +248,7 @@ jobs:
             output: 'trivy-results.sarif'
 
         - name: Upload Container Security Results
-          uses: github/codeql-action/upload-sarif@v2
+          uses: github/codeql-action/upload-sarif@v3
           if: always()
           with:
             sarif_file: 'trivy-results.sarif'
