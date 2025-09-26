@@ -80,10 +80,9 @@ def get_temperature_status(temperature):
     """Determine temperature status based on value."""
     if temperature < 10:
         return "Too Cold"
-    elif 11 <= temperature <= 36:
+    if 11 <= temperature <= 36:  
         return "Good"
-    else:  # temperature > 37
-        return "Too Hot"
+    return "Too Hot"
 
 
 @app.get("/temperature")
@@ -122,6 +121,7 @@ async def get_temperature():
             "sensor_count": len(temperatures),
             "timestamp": current_time.isoformat()
         }
+
 
     except (httpx.RequestError, ValueError, KeyError) as exc:
         return {
