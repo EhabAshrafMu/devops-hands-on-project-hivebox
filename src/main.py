@@ -5,16 +5,21 @@ from datetime import datetime, timedelta
 
 import httpx
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 
-APP_VERSION = "0.0.1"
+APP_VERSION = "0.0.2"
 APP_NAME = "HiveBox"
 
-# The 3 senseBox devices we'll get temperature from
-SENSEBOX_IDS = [
+# Make senseBox IDs configurable via environment variables
+SENSEBOX_IDS = os.getenv(
+    "SENSEBOX_IDS", 
+    "5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c"
+).split(",") if os.getenv("SENSEBOX_IDS") else [
     "5eba5fbad46fb8001b799786",
     "5c21ff8f919bf8001adf2488",
     "5ade1acf223bd80019a1011c"
 ]
+
 OPENSENSEMAP_API_URL = "https://api.opensensemap.org/boxes"
 
 app = FastAPI(
@@ -25,6 +30,10 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json"
 )
+
+# Initialize Prometheus metrics
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 
 @app.get("/")
@@ -45,6 +54,12 @@ async def health_check():
     return {"status": "healthy", "version": APP_VERSION}
 
 
+@app.get("/readyz")
+async def readiness_probe():
+    """Kubernetes readiness probe endpoint."""
+    return {"status": "ready"}
+
+
 def extract_temperature_from_box(box_data, one_hour_ago):
     """Extract temperature from senseBox data if available and fresh."""
     for sensor in box_data.get("sensors", []):
@@ -59,6 +74,16 @@ def extract_temperature_from_box(box_data, one_hour_ago):
                     return float(last_measurement["value"])
             break
     return None
+
+
+def get_temperature_status(temperature):
+    """Determine temperature status based on value."""
+    if temperature < 10:
+        return "Too Cold"
+    elif 11 <= temperature <= 36:
+        return "Good"
+    else:  # temperature > 37
+        return "Too Hot"
 
 
 @app.get("/temperature")
@@ -84,12 +109,16 @@ async def get_temperature():
         if not temperatures:
             return {
                 "error": "No recent temperature data available",
-                "average_temperature": None
+                "average_temperature": None,
+                "status": None
             }
 
         average_temp = sum(temperatures) / len(temperatures)
+        status = get_temperature_status(average_temp)
+        
         return {
             "average_temperature": round(average_temp, 2),
+            "status": status,
             "sensor_count": len(temperatures),
             "timestamp": current_time.isoformat()
         }
@@ -97,11 +126,13 @@ async def get_temperature():
     except (httpx.RequestError, ValueError, KeyError) as exc:
         return {
             "error": f"Failed to fetch temperature data: {str(exc)}",
-            "average_temperature": None
+            "average_temperature": None,
+            "status": None
         }
+
+# The /metrics endpoint is automatically created by Prometheus instrumentator
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
-    
