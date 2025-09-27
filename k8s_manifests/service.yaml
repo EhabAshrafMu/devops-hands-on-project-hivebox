@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hivebox-api-service
+  labels:
+    app: hivebox-api
+    component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: hivebox-api
+
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+      protocol: TCP
