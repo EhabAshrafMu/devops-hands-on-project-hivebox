@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey-service
+  labels:
+    app: valkey
+spec:
+  type: ClusterIP  # Internal only
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: valkey
+  selector:
+    app: valkey

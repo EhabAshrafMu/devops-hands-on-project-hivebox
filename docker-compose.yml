@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Cache Layer - Valkey (Redis-compatible)
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"  # Expose Redis port to host
+    # No volumes needed for dev (cache can be rebuilt)
+    
+  # Storage Layer - MinIO (S3-compatible)
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin      
+      MINIO_ROOT_PASSWORD: password123  
+    ports:
+      - "9000:9000"  # S3 API endpoint
+      - "9001:9001"  # Web Console (you can browse in browser)
+    volumes:
+      - minio-data:/data  # Persist data between restarts
+    
+  # The HiveBox Application
+  app:
+    build: .
+    depends_on:
+      - valkey
+      - minio
+    ports:
+      - "8000:8000"  # FastAPI default port
+    environment:
+      # Valkey connection (service name as hostname)
+      VALKEY_HOST: valkey
+      VALKEY_PORT: 6379
+      
+      # MinIO connection
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: password123
+      MINIO_BUCKET: hivebox-data
+      
+      # SenseBox IDs (from Phase 1)
+      SENSEBOX_IDS: "5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c"
+      
+      # Cache TTL (5 minutes = 300 seconds)
+      CACHE_TTL: 300
+      
+      # Storage interval (5 minutes = 300 seconds)
+      STORAGE_INTERVAL: 300
+
+# Define volumes for data persistence
+volumes:
+  minio-data:

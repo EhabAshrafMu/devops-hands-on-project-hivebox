@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hivebox.fullname" . }}
+  labels:
+    {{- include "hivebox.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hivebox.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "hivebox.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: hivebox
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: {{ include "hivebox.fullname" . }}-config
+        
+        # Liveness probe (is the app alive?)
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 10 }}
+        
+        # Readiness probe (is the app ready for traffic?)
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 10 }}
+          
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 12
+        
+        # Resource limits
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

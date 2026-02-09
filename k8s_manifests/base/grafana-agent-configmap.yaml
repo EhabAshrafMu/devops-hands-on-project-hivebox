@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-agent-config
+  labels:
+    app: grafana-agent
+data:
+  agent.yaml: |
+    # Grafana Agent Configuration
+    # Collects metrics and logs from Kubernetes and sends to Grafana Cloud
+    
+    server:
+      log_level: info
+    
+    # =========================================================================
+    # METRICS COLLECTION (Prometheus)
+    # =========================================================================
+    metrics:
+      # Global settings
+      global:
+        scrape_interval: 30s
+        external_labels:
+          cluster: 'minikube-dev'
+          environment: 'development'
+      
+      # Where to store metrics data temporarily
+      wal_directory: /tmp/agent/data
+      
+      # Prometheus remote write (send to Grafana Cloud)
+      configs:
+        - name: default
+          remote_write:
+            - url: ${PROMETHEUS_URL}
+              basic_auth:
+                username: ${PROMETHEUS_USERNAME}
+                password: ${GRAFANA_API_KEY}
+          
+          # What to scrape
+          scrape_configs:
+            # Scrape HiveBox application metrics
+            - job_name: 'hivebox-app'
+              kubernetes_sd_configs:
+                - role: pod
+                  namespaces:
+                    names:
+                      - default
+              
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                  regex: hivebox
+                  action: keep
+                
+                - source_labels: [__meta_kubernetes_pod_name]
+                  target_label: pod
+                
+                - source_labels: [__meta_kubernetes_namespace]
+                  target_label: namespace
+                
+                - source_labels: [__address__]
+                  regex: '([^:]+)(?::\d+)?'
+                  replacement: '$1:8000'
+                  target_label: __address__
+                
+                - source_labels: []
+                  target_label: __metrics_path__
+                  replacement: /metrics
+    
+    # =========================================================================
+    # LOGS COLLECTION (Loki)
+    # =========================================================================
+    logs:
+      # Directory to store log positions (which lines we've already sent)
+      positions_directory: /tmp/agent/positions
+      
+      configs:
+        - name: default
+          # Send logs to Grafana Cloud Loki
+          clients:
+            - url: ${LOKI_URL}
+              basic_auth:
+                username: ${PROMETHEUS_USERNAME}
+                password: ${GRAFANA_API_KEY}
+              
+              external_labels:
+                cluster: 'minikube-dev'
+                environment: 'development'
+          
+          # Scrape logs from Kubernetes pods
+          scrape_configs:
+            # Collect logs from all pods in default namespace
+            - job_name: kubernetes-pods
+              kubernetes_sd_configs:
+                - role: pod
+                  namespaces:
+                    names:
+                      - default
+              
+              # Configure log pipeline
+              pipeline_stages:
+                - docker: {}
+                
+                - regex:
+                    expression: '(?P<level>(INFO|DEBUG|WARNING|ERROR|CRITICAL))'
+                
+                - labels:
+                    level:
+              
+              # Which pods to collect logs from
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_name]
+                  target_label: pod
+                
+                - source_labels: [__meta_kubernetes_namespace]
+                  target_label: namespace
+                
+                - source_labels: [__meta_kubernetes_pod_container_name]
+                  target_label: container
+                
+                - action: labelmap
+                  regex: __meta_kubernetes_pod_label_(.+)

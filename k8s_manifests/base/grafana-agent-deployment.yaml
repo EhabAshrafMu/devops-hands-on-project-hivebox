@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-agent
+  labels:
+    app: grafana-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: grafana-agent
+  labels:
+    app: grafana-agent
+rules:
+  # Permissions to discover pods, services, endpoints
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  - nonResourceURLs:
+      - /metrics
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: grafana-agent
+  labels:
+    app: grafana-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: grafana-agent
+subjects:
+  - kind: ServiceAccount
+    name: grafana-agent
+    namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-agent
+  labels:
+    app: grafana-agent
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      app: grafana-agent
+  template:
+    metadata:
+      labels:
+        app: grafana-agent
+    spec:
+      serviceAccountName: grafana-agent
+      containers:
+      - name: grafana-agent
+        image: grafana/agent:v0.38.1
+        imagePullPolicy: IfNotPresent
+        args:
+          - -config.file=/etc/agent/agent.yaml
+          - -config.expand-env=true
+        env:
+          # Inject secrets as environment variables
+          - name: PROMETHEUS_URL
+            valueFrom:
+              secretKeyRef:
+                name: grafana-agent-credentials
+                key: prometheus-url
+          - name: LOKI_URL
+            valueFrom:
+              secretKeyRef:
+                name: grafana-agent-credentials
+                key: loki-url
+          - name: PROMETHEUS_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: grafana-agent-credentials
+                key: prometheus-username
+          - name: GRAFANA_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: grafana-agent-credentials
+                key: password
+        volumeMounts:
+          - name: config
+            mountPath: /etc/agent
+          - name: varlog
+            mountPath: /var/log
+            readOnly: true
+          - name: varlibdockercontainers
+            mountPath: /var/lib/docker/containers
+            readOnly: true
+        ports:
+          - containerPort: 12345
+            name: http-metrics
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      volumes:
+        - name: config
+          configMap:
+            name: grafana-agent-config
+        # Mount host directories to read container logs
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers

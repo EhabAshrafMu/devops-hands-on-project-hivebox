@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hivebox.fullname" . }}-config
+  labels:
+    {{- include "hivebox.labels" . | nindent 4 }}
+data:
+  # Valkey configuration
+  VALKEY_HOST: {{ .Values.config.valkey.host | quote }}
+  VALKEY_PORT: {{ .Values.config.valkey.port | quote }}
+  CACHE_TTL: {{ .Values.config.valkey.cacheTTL | quote }}
+  
+  # MinIO configuration
+  MINIO_ENDPOINT: {{ .Values.config.minio.endpoint | quote }}
+  MINIO_ACCESS_KEY: {{ .Values.config.minio.accessKey | quote }}
+  MINIO_SECRET_KEY: {{ .Values.config.minio.secretKey | quote }}
+  MINIO_BUCKET: {{ .Values.config.minio.bucket | quote }}
+  
+  # SenseBox configuration
+  SENSEBOX_IDS: {{ .Values.config.senseboxIds | quote }}
+  
+  # Storage configuration
+  STORAGE_INTERVAL: {{ .Values.config.storageInterval | quote }}

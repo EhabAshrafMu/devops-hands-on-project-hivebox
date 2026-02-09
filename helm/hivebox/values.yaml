@@ -1,0 +1,107 @@
+# Default values for HiveBox Helm chart
+
+# ============================================================================
+# IMAGE CONFIGURATION
+# ============================================================================
+image:
+  repository: hivebox  
+  pullPolicy: IfNotPresent
+  tag: "0.0.2"  
+
+# ============================================================================
+# REPLICA CONFIGURATION
+# ============================================================================
+replicaCount: 2  # Run 2 pods for high availability
+
+# ============================================================================
+# SERVICE CONFIGURATION
+# ============================================================================
+service:
+  type: ClusterIP  # Internal service (use LoadBalancer for cloud)
+  port: 8000
+  targetPort: 8000
+
+# ============================================================================
+# INGRESS CONFIGURATION (Optional - for external access)
+# ============================================================================
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: hivebox.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# ============================================================================
+# RESOURCE LIMITS (Very important for production!)
+# ============================================================================
+resources:
+  limits:
+    cpu: 500m      # Max 0.5 CPU cores
+    memory: 512Mi  # Max 512 MB RAM
+  requests:
+    cpu: 100m      # Reserve 0.1 CPU cores
+    memory: 128Mi  # Reserve 128 MB RAM
+
+# ============================================================================
+# HEALTH CHECKS
+# ============================================================================
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# ============================================================================
+# APPLICATION CONFIGURATION
+# ============================================================================
+config:
+  # Valkey (Redis) connection
+  valkey:
+    host: valkey-service  # Will be created by Kustomize
+    port: 6379
+    cacheTTL: 300  # 5 minutes
+  
+  # MinIO connection
+  minio:
+    endpoint: minio-service:9000  # Will be created by Kustomize
+    accessKey: admin
+    secretKey: password123  # In production, use Kubernetes Secrets!
+    bucket: hivebox-data
+  
+  # SenseBox IDs
+  senseboxIds: "5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c"
+  
+  # Storage interval (seconds)
+  storageInterval: 300  # 5 minutes
+
+# ============================================================================
+# AUTOSCALING (Optional - for Phase 6)
+# ============================================================================
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+# ============================================================================
+# NODE SELECTOR & TOLERATIONS (Advanced - ignore for now)
+# ============================================================================
+nodeSelector: {}
+tolerations: []
+affinity: {}
